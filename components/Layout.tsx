@@ -26,7 +26,7 @@ const Layout: React.FC<LayoutProps> = ({ children, user, title, showBack, onLogo
       />
 
       {/* Header */}
-      <header className="bg-white border-b px-4 py-3 flex items-center justify-between z-10 shrink-0">
+      <header className="bg-white border-b px-4 py-3 flex items-center justify-between z-[1500] shrink-0">
         <div className="flex items-center gap-3">
           {showBack ? (
             <button onClick={() => navigate(-1)} className="p-2 -ml-2 hover:bg-gray-50 rounded-full">

@@ -1,40 +1,40 @@
 
-# ADILE DRIVE - APK GENERATION (WITHOUT ANDROID STUDIO)
+# ADILE DRIVE - APK GENERATION & INSTALLATION GUIDE
 
-If you don't want to install Android Studio, use one of these two Cloud Build methods.
-
-## OPTION A: VoltBuilder (Easiest / No Setup)
-This is a web service that converts your web code to an APK in minutes.
-
-1. **Prepare your files:**
-   - Run `npm run build` in your terminal. This creates a `dist` folder.
-   - Create a ZIP file containing: `dist`, `capacitor.config.json`, `package.json`, and the `android` folder (if you ran `npx cap add android`).
-2. **Upload:**
-   - Go to [VoltBuilder.com](https://www.voltbuilder.com/).
-   - Upload your ZIP file.
-3. **Download:**
-   - They will process the build on their servers.
-   - Once finished, they will provide a download link for your `.apk` file.
-
-## OPTION B: GitHub Actions (Professional & Free)
-I have created a file for you in `.github/workflows/android.yml`. This allows GitHub to build your APK every time you push code.
-
-1. **Push your code to a GitHub Repository.**
-2. **Go to the "Actions" tab** in your GitHub repository.
-3. You will see a workflow named "Build Android APK".
-4. Once it finishes (takes ~5-8 mins), click on the build run.
-5. Under **"Artifacts"**, you can download the `app-release.apk`.
-
-## OPTION C: Ionic Appflow
-Ionic (the creators of Capacitor) offer a professional dashboard.
-1. Create an account at [ionicframework.com/appflow](https://ionicframework.com/appflow).
-2. Connect your GitHub repository.
-3. Click "Build" and choose "Android". It will generate the APK for you in the cloud.
+## 1. GENERATING THE APK (No Software Needed)
+Use **GitHub Actions** (The professional way):
+1. Push your code to a GitHub Repository.
+2. Click the **"Actions"** tab on GitHub.
+3. Select **"Build Android APK"** and let it run (5 minutes).
+4. When finished, click the run, scroll down to **"Artifacts"**, and download the APK.
 
 ---
 
-### IMPORTANT: Fixing the "Moved, edited, or deleted" error
-This error often happens in web previews when the URL changes. To prevent this in your mobile app:
-1. Ensure you use `HashRouter` (already implemented).
-2. NEVER use `window.location.href = ...` or `window.location.reload()`.
-3. Always use the `useNavigate()` hook from `react-router-dom`.
+## 2. INSTALLING ON YOUR PHONE
+Once you have the `.apk` file:
+
+### Step A: Transfer to Phone
+- Send the file to yourself via **WhatsApp**, **Telegram**, or upload it to **Google Drive**.
+- Alternatively, connect your phone to your computer via USB and copy the file to the "Downloads" folder.
+
+### Step B: Allow Unknown Sources
+1. On your phone, go to **Settings** > **Apps** > **Special App Access**.
+2. Tap **Install unknown apps**.
+3. Select the app you'll use to open the APK (e.g., "Files" or "Chrome") and toggle **Allow from this source** to ON.
+
+### Step C: Run the Installer
+1. Open your **File Manager** app on the phone.
+2. Find `app-debug.apk` and tap it.
+3. Tap **Install**.
+
+### Step D: "Play Protect" Warning
+Because this is a custom-built app, your phone might say "Unsafe app blocked". 
+- Tap **"More Details"** (small arrow).
+- Tap **"Install Anyway"**.
+
+---
+
+## 3. TROUBLESHOOTING
+- **"App not installed"**: This usually means you already have an older version of Adile Drive installed with a different signature. Delete the old version first.
+- **"Parsing error"**: Ensure you downloaded the full file and it didn't get corrupted during transfer.
+- **"Staging Commit Error"**: If GitHub tells you "something went wrong" when saving, ensure you are logged in and haven't hit the file size limit (this project is small, so it should be fine). Try refreshing the page.
