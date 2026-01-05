@@ -1,0 +1,10 @@
+
+{
+  "appId": "com.adile.drive",
+  "appName": "Adile Drive",
+  "webDir": "dist",
+  "bundledWebRuntime": false,
+  "server": {
+    "androidScheme": "https"
+  }
+}
