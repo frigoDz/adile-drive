@@ -174,7 +174,8 @@ const UserHome: React.FC<UserHomeProps> = ({ user, onRequestRide, onCancelRide, 
           onMapClick={handleMapClick}
         />
         
-        <div className="absolute top-4 left-4 right-4 bg-white rounded-2xl shadow-xl p-2 flex flex-col gap-2 border border-gray-100 z-[1001]">
+        {/* Lowered z-index here (z-10) to ensure sidebar z-2000 is always on top */}
+        <div className="absolute top-4 left-4 right-4 bg-white rounded-2xl shadow-xl p-2 flex flex-col gap-2 border border-gray-100 z-10">
            <div className={`flex items-center gap-3 p-2 rounded-xl relative transition-all ${focusedField === 'pickup' ? 'bg-blue-50 border border-blue-200' : 'bg-gray-50 border border-transparent'}`}>
               <MapPin className="text-green-600 w-5 h-5 shrink-0" />
               <input 
