@@ -5,6 +5,15 @@ import { mockAuth } from '../services/mockFirebase';
 import { Loader2, User, Lock, Phone, Mail, AlertCircle, Car, Bike, Truck, Info, CheckCircle2 } from 'lucide-react';
 import { validateEmail, validateMoroccanPhone, validatePasswordStrength } from '../utils/validation';
 
+const SteeringWheel = ({ className }: { className?: string }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 21a9 9 0 100-18 9 9 0 000 18z" />
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 12V3" />
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 12l6 6M12 12l-6 6" />
+  </svg>
+);
+
 interface SignupProps {
   onSignupSuccess: (user: any) => void;
   onNavigateToLogin: () => void;
@@ -249,14 +258,5 @@ const Signup: React.FC<SignupProps> = ({ onSignupSuccess, onNavigateToLogin }) =
     </div>
   );
 };
-
-const SteeringWheel = ({ className }: { className?: string }) => (
-  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 21a9 9 0 100-18 9 9 0 000 18z" />
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 12V3" />
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 12l6 6M12 12l-6 6" />
-  </svg>
-);
 
 export default Signup;
