@@ -18,7 +18,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
+          # Removed cache: 'npm' because it requires a package-lock.json file which may not exist yet.
 
       - name: Install Dependencies
         run: npm install
@@ -42,7 +42,7 @@ jobs:
 
       - name: Fix Repositories (Prevent 403 Errors)
         run: |
-          # Ensure mavenCentral() and google() are used and preferred
+          # Force the use of mavenCentral and google repositories to avoid Forbidden 403 errors
           find android -name "build.gradle" -exec sed -i 's/jcenter()/mavenCentral()/g' {} +
           find android -name "build.gradle" -exec sed -i 's/maven { url "https:\/\/repo.maven.apache.org\/maven2" }/mavenCentral()/g' {} +
 
