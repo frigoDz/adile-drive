@@ -21,7 +21,8 @@ const UserHome: React.FC<UserHomeProps> = ({ user, onRequestRide, onCancelRide, 
   const [vehicle, setVehicle] = useState<VehicleType>(VehicleType.CAR);
   const [locating, setLocating] = useState(false);
   const [mapCenter, setMapCenter] = useState<[number, number]>([33.5731, -7.5898]);
-  const [focusedField, setFocusedField] = useState<'pickup' | 'dropoff' | null>(null);
+  
+  const [focusedField, setFocusedField] = useState<'pickup' | 'dropoff'>('pickup');
   const [suggestions, setSuggestions] = useState<{ name: string, coords: [number, number] }[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const searchTimeout = useRef<any>(null);
@@ -60,13 +61,14 @@ const UserHome: React.FC<UserHomeProps> = ({ user, onRequestRide, onCancelRide, 
     setSuggestions([]);
   };
 
+  // HANDLE MAP CLICK - UPDATES BASED ON CURRENT FOCUS
   const handleMapClick = (coords: [number, number]) => {
     if (focusedField === 'pickup') {
       setPickupCoords(coords);
-      setPickup(`Pinned: ${coords[0].toFixed(3)}, ${coords[1].toFixed(3)}`);
+      setPickup(`Pinned Pickup Point`);
     } else {
       setDropoffCoords(coords);
-      setDropoff(`Pinned: ${coords[0].toFixed(3)}, ${coords[1].toFixed(3)}`);
+      setDropoff(`Pinned Destination`);
     }
   };
 
@@ -82,6 +84,7 @@ const UserHome: React.FC<UserHomeProps> = ({ user, onRequestRide, onCancelRide, 
 
   const handleGetCurrentLocation = () => {
     setLocating(true);
+    setFocusedField('pickup');
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition((position) => {
         const coords: [number, number] = [position.coords.latitude, position.coords.longitude];
@@ -113,34 +116,34 @@ const UserHome: React.FC<UserHomeProps> = ({ user, onRequestRide, onCancelRide, 
 
   if (activeRide) {
     return (
-      <div className="h-full flex flex-col">
+      <div className="h-full flex flex-col bg-slate-950">
         <div className="flex-1 relative">
            <RealMap 
              pickupCoords={[activeRide.pickup.lat, activeRide.pickup.lng]} 
              dropoffCoords={[activeRide.dropoff.lat, activeRide.dropoff.lng]} 
            />
            <div className="absolute top-4 left-4 right-4 z-10">
-              <div className="bg-white/95 backdrop-blur rounded-2xl p-4 shadow-lg border border-white/50">
-                 <h3 className="font-bold text-lg mb-1">
+              <div className="bg-slate-900/95 backdrop-blur-md rounded-2xl p-4 shadow-2xl border border-slate-800">
+                 <h3 className="font-bold text-lg mb-1 text-white">
                    {activeRide.status === RideStatus.PENDING ? 'Finding Drivers...' : 
                     activeRide.status === RideStatus.ACCEPTED ? 'Driver is arriving' :
                     'On your way'}
                  </h3>
-                 <div className="flex items-center gap-2 text-sm text-gray-500">
-                    <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                    <span>{activeRide.vehicleType.toUpperCase()} • {activeRide.offeredPrice} DH</span>
+                 <div className="flex items-center gap-2 text-sm text-slate-400">
+                    <div className="w-2.5 h-2.5 rounded-full bg-blue-500 animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.5)]"></div>
+                    <span className="font-bold uppercase tracking-wider">{activeRide.vehicleType} • {activeRide.offeredPrice} DH</span>
                  </div>
               </div>
            </div>
         </div>
 
-        <div className="bg-white p-6 rounded-t-3xl shadow-[0_-10px_20px_rgba(0,0,0,0.05)] border-t z-20">
+        <div className="bg-slate-900 p-6 rounded-t-[32px] shadow-[0_-10px_30px_rgba(0,0,0,0.5)] border-t border-slate-800 z-20">
           {activeRide.status === RideStatus.PENDING ? (
             <div className="text-center py-4">
-              <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-              <p className="font-semibold text-gray-700">Finding nearby {activeRide.vehicleType}s...</p>
+              <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
+              <p className="font-black text-white uppercase tracking-tighter text-lg">Finding nearby {activeRide.vehicleType}s...</p>
               <button 
-                className="mt-4 text-red-500 font-bold active:scale-95 transition-all" 
+                className="mt-6 text-red-500 font-black uppercase text-xs tracking-widest active:scale-95 transition-all" 
                 onClick={onCancelRide}
               >
                 Cancel Request
@@ -149,12 +152,12 @@ const UserHome: React.FC<UserHomeProps> = ({ user, onRequestRide, onCancelRide, 
           ) : (
              <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
-                 <div className="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-xl">
+                 <div className="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center text-white font-black text-xl shadow-lg">
                    {activeRide.driverName?.[0] || 'D'}
                  </div>
                  <div>
-                   <h4 className="font-bold text-lg">{activeRide.driverName || 'Driver'}</h4>
-                   <p className="text-gray-500 text-sm">Active Trip • 4.9 ★</p>
+                   <h4 className="font-black text-lg text-white">{activeRide.driverName || 'Driver'}</h4>
+                   <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">Active Trip • 4.9 ★</p>
                  </div>
               </div>
             </div>
@@ -165,7 +168,7 @@ const UserHome: React.FC<UserHomeProps> = ({ user, onRequestRide, onCancelRide, 
   }
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col bg-slate-950">
       <div className="flex-1 relative">
         <RealMap 
           center={mapCenter} 
@@ -174,65 +177,62 @@ const UserHome: React.FC<UserHomeProps> = ({ user, onRequestRide, onCancelRide, 
           onMapClick={handleMapClick}
         />
         
-        {/* Lowered z-index here (z-10) to ensure sidebar z-2000 is always on top */}
-        <div className="absolute top-4 left-4 right-4 bg-white rounded-2xl shadow-xl p-2 flex flex-col gap-2 border border-gray-100 z-10">
-           <div className={`flex items-center gap-3 p-2 rounded-xl relative transition-all ${focusedField === 'pickup' ? 'bg-blue-50 border border-blue-200' : 'bg-gray-50 border border-transparent'}`}>
-              <MapPin className="text-green-600 w-5 h-5 shrink-0" />
+        <div className="absolute top-4 left-4 right-4 bg-slate-900/95 backdrop-blur-sm rounded-2xl shadow-2xl p-2.5 flex flex-col gap-2.5 border border-slate-800 z-10">
+           <div 
+            onClick={() => setFocusedField('pickup')}
+            className={`flex items-center gap-3 p-3 rounded-xl relative transition-all border-2 cursor-pointer ${focusedField === 'pickup' ? 'bg-blue-600/20 border-blue-600 shadow-[0_0_15px_rgba(37,99,235,0.25)]' : 'bg-slate-950/50 border-transparent'}`}>
+              <MapPin className="text-green-500 w-5 h-5 shrink-0" />
               <input 
-                className="bg-transparent w-full text-sm outline-none font-medium"
+                className="bg-transparent w-full text-sm outline-none font-bold text-white placeholder-slate-600"
                 value={pickup}
                 onFocus={() => setFocusedField('pickup')}
                 onChange={(e) => handleInputChange(e.target.value, 'pickup')}
-                placeholder="Pickup Neighborhood or Tap Map"
+                placeholder="Where to pick you up?"
               />
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-2">
                 <button 
-                  onClick={handleGetCurrentLocation}
+                  onClick={(e) => { e.stopPropagation(); handleGetCurrentLocation(); }}
                   disabled={locating}
-                  className="p-1.5 bg-white shadow-sm rounded-lg text-blue-600 active:scale-90"
+                  className="p-2 bg-slate-800 hover:bg-slate-700 shadow-md rounded-lg text-blue-500 active:scale-90 transition-all"
                 >
                   {locating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Navigation className="w-4 h-4" />}
                 </button>
-                <button 
-                  onClick={() => setFocusedField('pickup')}
-                  className={`p-1.5 rounded-lg transition-all ${focusedField === 'pickup' ? 'bg-blue-600 text-white' : 'bg-white text-gray-400'}`}
-                >
+                <div className={`p-2 rounded-lg transition-all ${focusedField === 'pickup' ? 'bg-blue-600 text-white' : 'bg-slate-800 text-slate-500'}`}>
                   <MousePointer2 className="w-4 h-4" />
-                </button>
+                </div>
               </div>
            </div>
 
-           <div className={`flex items-center gap-3 p-2 rounded-xl border transition-all ${focusedField === 'dropoff' ? 'bg-blue-50 border-blue-300' : 'bg-gray-50 border-transparent'}`}>
-              <Search className="text-blue-600 w-5 h-5 shrink-0" />
+           <div 
+            onClick={() => setFocusedField('dropoff')}
+            className={`flex items-center gap-3 p-3 rounded-xl transition-all border-2 cursor-pointer ${focusedField === 'dropoff' ? 'bg-blue-600/20 border-blue-600 shadow-[0_0_15px_rgba(37,99,235,0.25)]' : 'bg-slate-950/50 border-transparent'}`}>
+              <Search className="text-red-500 w-5 h-5 shrink-0" />
               <input 
-                className="bg-transparent w-full text-sm outline-none font-medium"
+                className="bg-transparent w-full text-sm outline-none font-bold text-white placeholder-slate-600"
                 value={dropoff}
                 onFocus={() => setFocusedField('dropoff')}
                 onChange={(e) => handleInputChange(e.target.value, 'dropoff')}
-                placeholder="Where to?"
+                placeholder="Where are you going?"
               />
-              <button 
-                onClick={() => setFocusedField('dropoff')}
-                className={`p-1.5 rounded-lg transition-all ${focusedField === 'dropoff' ? 'bg-blue-600 text-white' : 'bg-white text-gray-400'}`}
-              >
+              <div className={`p-2 rounded-lg transition-all ${focusedField === 'dropoff' ? 'bg-blue-600 text-white' : 'bg-slate-800 text-slate-500'}`}>
                 <MousePointer2 className="w-4 h-4" />
-              </button>
+              </div>
            </div>
 
            {(isSearching || suggestions.length > 0) && (
-             <div className="bg-white border-t rounded-b-xl overflow-hidden divide-y max-h-48 overflow-y-auto">
+             <div className="bg-slate-900 border-t border-slate-800 rounded-b-xl overflow-hidden divide-y divide-slate-800 max-h-56 overflow-y-auto shadow-2xl">
                {isSearching && (
-                 <div className="p-3 text-center text-gray-400 text-xs flex items-center justify-center gap-2">
-                   <Loader2 className="w-3 h-3 animate-spin" /> Searching OpenStreetMap...
+                 <div className="p-4 text-center text-slate-500 text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-3">
+                   <Loader2 className="w-3.5 h-3.5 animate-spin text-blue-500" /> Searching...
                  </div>
                )}
                {suggestions.map((s, i) => (
                  <button 
                    key={i}
                    onClick={() => selectSuggestion(s)}
-                   className="w-full text-left p-3 hover:bg-gray-50 flex items-center gap-3 text-sm font-semibold text-gray-700"
+                   className="w-full text-left p-4 hover:bg-slate-800 flex items-center gap-4 text-sm font-bold text-slate-300 transition-colors"
                  >
-                   <MapPin className="w-4 h-4 text-gray-300" />
+                   <MapPin className="w-4 h-4 text-slate-600" />
                    <span className="truncate">{s.name}</span>
                  </button>
                ))}
@@ -241,31 +241,35 @@ const UserHome: React.FC<UserHomeProps> = ({ user, onRequestRide, onCancelRide, 
         </div>
       </div>
 
-      <div className="bg-white p-6 rounded-t-3xl shadow-2xl space-y-4 z-20">
-        <div className="flex justify-between items-center">
+      <div className="bg-slate-900 p-6 rounded-t-[40px] shadow-[0_-15px_40px_rgba(0,0,0,0.6)] space-y-5 border-t border-slate-800 z-20">
+        <div className="flex justify-between items-center px-2">
           <div>
-            <h2 className="text-lg font-black uppercase tracking-tight">Select Ride</h2>
-            <p className="text-[10px] font-bold text-gray-400 uppercase">{distance} km trip</p>
+            <h2 className="text-xl font-black uppercase tracking-tighter italic text-white leading-tight">Select Ride</h2>
+            <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{distance} km trip</p>
           </div>
           <div className="flex flex-col items-end">
-            <span className="text-2xl font-black text-blue-600">{price} <span className="text-sm">DH</span></span>
-            <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Fixed Fare</span>
+            <span className="text-3xl font-black text-blue-500 leading-none">{price} <span className="text-sm font-black text-slate-400">DH</span></span>
+            <span className="text-[10px] text-slate-600 font-bold uppercase tracking-[0.2em] mt-1">Negotiated</span>
           </div>
         </div>
 
-        <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1">
+        <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide px-1">
           {Object.entries(VEHICLE_CONFIG).map(([type, config]) => (
             <button
               key={type}
               onClick={() => setVehicle(type as VehicleType)}
-              className={`flex-1 min-w-[100px] flex flex-col items-center p-3 rounded-2xl border-2 transition-all ${
-                vehicle === type ? 'border-blue-600 bg-blue-50 shadow-inner' : 'border-gray-100 bg-white'
+              className={`flex-1 min-w-[95px] flex flex-col items-center justify-center py-5 px-1 rounded-[28px] border-2 transition-all active:scale-95 ${
+                vehicle === type 
+                ? 'border-blue-600 bg-blue-600/10' 
+                : 'border-slate-800 bg-slate-950/50'
               }`}
             >
-              <div className={`${(config as any).color} p-2 rounded-xl text-white mb-2 shadow-sm`}>
-                {(config as any).icon}
+              <div className={`${(config as any).color} w-14 h-14 rounded-2xl flex items-center justify-center text-white mb-2 shadow-lg shrink-0 overflow-visible`}>
+                 {(config as any).icon}
               </div>
-              <span className="text-xs font-bold uppercase tracking-tighter">{(config as any).label}</span>
+              <span className={`text-[10px] font-black uppercase tracking-widest text-center leading-tight ${vehicle === type ? 'text-white' : 'text-slate-500'}`}>
+                {(config as any).label}
+              </span>
             </button>
           ))}
         </div>
@@ -273,11 +277,13 @@ const UserHome: React.FC<UserHomeProps> = ({ user, onRequestRide, onCancelRide, 
         <button
           onClick={handleRequest}
           disabled={!pickupCoords || !dropoffCoords}
-          className={`w-full py-4 rounded-2xl font-black text-lg flex items-center justify-center gap-3 transition-all ${
-            (pickupCoords && dropoffCoords) ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 active:scale-95' : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+          className={`w-full py-5 rounded-[24px] font-black text-lg flex items-center justify-center gap-3 transition-all ${
+            (pickupCoords && dropoffCoords) 
+            ? 'bg-blue-600 text-white shadow-xl shadow-blue-900/40 active:scale-[0.98]' 
+            : 'bg-slate-800 text-slate-600 cursor-not-allowed'
           }`}
         >
-          REQUEST NOW <Send className="w-5 h-5" />
+          CONFIRM REQUEST <Send className="w-5 h-5" />
         </button>
       </div>
     </div>

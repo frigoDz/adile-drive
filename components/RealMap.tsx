@@ -23,6 +23,12 @@ const RealMap: React.FC<RealMapProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const pickupMarkerRef = useRef<L.Marker | null>(null);
   const dropoffMarkerRef = useRef<L.Marker | null>(null);
+  
+  // Use a ref for the click handler to avoid stale closures with React state
+  const onMapClickRef = useRef(onMapClick);
+  useEffect(() => {
+    onMapClickRef.current = onMapClick;
+  }, [onMapClick]);
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
@@ -33,16 +39,14 @@ const RealMap: React.FC<RealMapProps> = ({
       attributionControl: false
     }).setView(center, zoom);
 
-    // Add Free OpenStreetMap Tile Layer
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    // Add Light Mode Tile Layer (CartoDB Positron)
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
       maxZoom: 19,
     }).addTo(mapRef.current);
 
-    // Click listener for pinning
+    // Click listener for pinning using the latest ref
     mapRef.current.on('click', (e) => {
-      if (onMapClick) {
-        onMapClick([e.latlng.lat, e.latlng.lng]);
-      }
+      onMapClickRef.current?.([e.latlng.lat, e.latlng.lng]);
     });
 
     return () => {
@@ -53,10 +57,19 @@ const RealMap: React.FC<RealMapProps> = ({
     };
   }, []);
 
-  // Sync center
+  // Sync center with stabilization
   useEffect(() => {
     if (mapRef.current && center) {
-      mapRef.current.flyTo(center, mapRef.current.getZoom(), { duration: 1 });
+      const currentCenter = mapRef.current.getCenter();
+      const latDiff = Math.abs(currentCenter.lat - center[0]);
+      const lngDiff = Math.abs(currentCenter.lng - center[1]);
+      
+      if (latDiff > 0.001 || lngDiff > 0.001) {
+        mapRef.current.flyTo(center, mapRef.current.getZoom(), { 
+          duration: 1.2,
+          easeLinearity: 0.25
+        });
+      }
     }
   }, [center]);
 
@@ -64,18 +77,23 @@ const RealMap: React.FC<RealMapProps> = ({
   useEffect(() => {
     if (!mapRef.current) return;
 
-    // Pickup Marker
+    // Pickup Marker (Green - 20px)
     if (pickupCoords) {
+      const icon = L.divIcon({
+        className: 'custom-div-icon',
+        html: `<div class="flex items-center justify-center">
+                <div class="bg-white p-0.5 rounded-full shadow-lg border-2 border-green-500">
+                  <div class="w-2.5 h-2.5 bg-green-500 rounded-full shadow-[0_0_5px_rgba(34,197,94,0.8)]"></div>
+                </div>
+              </div>`,
+        iconSize: [20, 20],
+        iconAnchor: [10, 10]
+      });
+
       if (pickupMarkerRef.current) {
         pickupMarkerRef.current.setLatLng(pickupCoords);
+        pickupMarkerRef.current.setIcon(icon);
       } else {
-        const icon = L.divIcon({
-          className: 'custom-div-icon',
-          html: `<div class="bg-white p-1 rounded-full shadow-lg border-2 border-green-500">
-                  <div class="w-3 h-3 bg-green-500 rounded-full"></div>
-                </div>`,
-          iconSize: [20, 20]
-        });
         pickupMarkerRef.current = L.marker(pickupCoords, { icon }).addTo(mapRef.current);
       }
     } else if (pickupMarkerRef.current) {
@@ -83,18 +101,23 @@ const RealMap: React.FC<RealMapProps> = ({
       pickupMarkerRef.current = null;
     }
 
-    // Dropoff Marker
+    // Dropoff Marker (Red - 20px)
     if (dropoffCoords) {
+      const icon = L.divIcon({
+        className: 'custom-div-icon',
+        html: `<div class="flex items-center justify-center">
+                <div class="bg-white p-0.5 rounded-full shadow-lg border-2 border-red-500">
+                  <div class="w-2.5 h-2.5 bg-red-500 rounded-full shadow-[0_0_5px_rgba(239,68,68,0.8)]"></div>
+                </div>
+              </div>`,
+        iconSize: [20, 20],
+        iconAnchor: [10, 10]
+      });
+
       if (dropoffMarkerRef.current) {
         dropoffMarkerRef.current.setLatLng(dropoffCoords);
+        dropoffMarkerRef.current.setIcon(icon);
       } else {
-        const icon = L.divIcon({
-          className: 'custom-div-icon',
-          html: `<div class="bg-white p-1 rounded-full shadow-lg border-2 border-red-500">
-                  <div class="w-3 h-3 bg-red-500 rounded-full"></div>
-                </div>`,
-          iconSize: [20, 20]
-        });
         dropoffMarkerRef.current = L.marker(dropoffCoords, { icon }).addTo(mapRef.current);
       }
     } else if (dropoffMarkerRef.current) {
@@ -102,25 +125,25 @@ const RealMap: React.FC<RealMapProps> = ({
       dropoffMarkerRef.current = null;
     }
 
-    // Bounds fit
+    // Auto-zoom to fit both pins
     if (pickupCoords && dropoffCoords && mapRef.current) {
       const bounds = L.latLngBounds([pickupCoords, dropoffCoords]);
-      mapRef.current.fitBounds(bounds, { padding: [50, 50] });
+      mapRef.current.fitBounds(bounds, { padding: [80, 80], maxZoom: 15 });
     }
   }, [pickupCoords, dropoffCoords]);
 
   return (
-    <div ref={containerRef} className="w-full h-full relative">
-      <div className="absolute bottom-6 right-4 z-[1000] flex flex-col gap-2">
+    <div ref={containerRef} className="w-full h-full relative bg-slate-100">
+      <div className="absolute bottom-12 right-4 z-[1000] flex flex-col gap-3">
         <button 
           onClick={() => mapRef.current?.zoomIn()}
-          className="w-12 h-12 bg-white rounded-full shadow-xl flex items-center justify-center font-bold text-gray-700 hover:bg-gray-50 active:scale-90 transition-all"
+          className="w-10 h-10 bg-white text-slate-900 rounded-xl shadow-xl flex items-center justify-center font-black text-lg hover:bg-slate-50 active:scale-90 transition-all border border-slate-200"
         >
           +
         </button>
         <button 
           onClick={() => mapRef.current?.zoomOut()}
-          className="w-12 h-12 bg-white rounded-full shadow-xl flex items-center justify-center font-bold text-gray-700 hover:bg-gray-50 active:scale-90 transition-all"
+          className="w-10 h-10 bg-white text-slate-900 rounded-xl shadow-xl flex items-center justify-center font-black text-lg hover:bg-slate-50 active:scale-90 transition-all border border-slate-200"
         >
           -
         </button>

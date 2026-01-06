@@ -179,6 +179,18 @@ const Signup: React.FC<SignupProps> = ({ onSignupSuccess, onNavigateToLogin }) =
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
+            {/* ADDED: Missing Confirm Password Field */}
+            <div className="relative">
+              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+              <input
+                type="password"
+                required
+                className="w-full bg-slate-900 pl-12 pr-4 py-4 rounded-2xl border border-slate-800 text-white placeholder-slate-600 outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Confirm Password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
+            </div>
           </div>
         </div>
 
