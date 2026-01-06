@@ -2,8 +2,9 @@
 import React, { useState } from 'react';
 import { UserRole, VehicleType } from '../types';
 import { mockAuth } from '../services/mockFirebase';
-import { Loader2, User, Lock, Phone, Mail, AlertCircle, Car, Bike, Truck, Info, CheckCircle2 } from 'lucide-react';
+import { Loader2, User, Lock, Phone, Mail, AlertCircle, Car, Bike, Truck, CheckCircle2 } from 'lucide-react';
 import { validateEmail, validateMoroccanPhone, validatePasswordStrength } from '../utils/validation';
+import Logo from '../components/Logo';
 
 const SteeringWheel = ({ className }: { className?: string }) => (
   <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -91,10 +92,11 @@ const Signup: React.FC<SignupProps> = ({ onSignupSuccess, onNavigateToLogin }) =
   };
 
   return (
-    <div className="h-full flex flex-col p-6 bg-slate-950 max-w-md mx-auto shadow-xl overflow-y-auto">
-      <div className="mt-8 mb-6">
-        <h1 className="text-3xl font-black text-white">Create Account</h1>
-        <p className="text-slate-400 mt-2 font-medium">Join the Adile Drive community today.</p>
+    <div className="min-h-screen w-full flex flex-col p-8 bg-slate-950 overflow-y-auto">
+      <div className="mt-8 mb-8">
+        <Logo size="md" showIcon={false} className="mb-6" />
+        <h1 className="text-3xl font-black text-white italic">Join the Family</h1>
+        <p className="text-slate-500 font-bold uppercase text-[10px] tracking-widest mt-1">Start your journey with Adile Drive</p>
       </div>
 
       <div className="flex gap-4 mb-8">
@@ -107,7 +109,7 @@ const Signup: React.FC<SignupProps> = ({ onSignupSuccess, onNavigateToLogin }) =
           }`}
         >
           <User className="w-6 h-6 mb-2" />
-          <span className="font-black text-xs uppercase">Passenger</span>
+          <span className="font-black text-[10px] uppercase tracking-wider">Passenger</span>
         </button>
         <button
           onClick={() => setRole(UserRole.DRIVER)}
@@ -118,15 +120,15 @@ const Signup: React.FC<SignupProps> = ({ onSignupSuccess, onNavigateToLogin }) =
           }`}
         >
           <SteeringWheel className="w-6 h-6 mb-2" />
-          <span className="font-black text-xs uppercase">Driver</span>
+          <span className="font-black text-[10px] uppercase tracking-wider">Driver</span>
         </button>
       </div>
 
       <form onSubmit={handleSignup} className="space-y-5 pb-12">
         {error && (
-          <div className="bg-red-500/10 border border-red-500/20 p-4 rounded-xl flex items-center gap-3">
+          <div className="bg-red-500/10 border border-red-500/20 p-4 rounded-2xl flex items-center gap-3">
             <AlertCircle className="w-5 h-5 text-red-400 shrink-0" />
-            <p className="text-red-400 text-xs font-bold">{error}</p>
+            <p className="text-red-400 text-[10px] font-bold uppercase tracking-wider">{error}</p>
           </div>
         )}
 
@@ -159,13 +161,13 @@ const Signup: React.FC<SignupProps> = ({ onSignupSuccess, onNavigateToLogin }) =
               type="tel"
               required
               className="w-full bg-slate-900 pl-12 pr-4 py-4 rounded-2xl border border-slate-800 text-white placeholder-slate-600 outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Phone (e.g. 0612345678)"
+              placeholder="Phone (e.g. 06...)"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
             />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4">
             <div className="relative">
               <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
               <input
@@ -177,17 +179,6 @@ const Signup: React.FC<SignupProps> = ({ onSignupSuccess, onNavigateToLogin }) =
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
-            <div className="relative">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
-              <input
-                type="password"
-                required
-                className="w-full bg-slate-900 pl-12 pr-4 py-4 rounded-2xl border border-slate-800 text-white placeholder-slate-600 outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Confirm"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-              />
-            </div>
           </div>
         </div>
 
@@ -195,7 +186,7 @@ const Signup: React.FC<SignupProps> = ({ onSignupSuccess, onNavigateToLogin }) =
           <div className="mt-8 space-y-5 p-6 bg-slate-900/50 rounded-3xl border border-slate-800 animate-in fade-in slide-in-from-top-4">
             <div className="flex items-center gap-2">
               <CheckCircle2 className="w-5 h-5 text-blue-500" />
-              <h3 className="font-black text-white text-sm uppercase tracking-widest">Vehicle Details</h3>
+              <h3 className="font-black text-white text-xs uppercase tracking-widest">Vehicle Details</h3>
             </div>
             
             <div className="grid grid-cols-3 gap-3">
@@ -225,7 +216,7 @@ const Signup: React.FC<SignupProps> = ({ onSignupSuccess, onNavigateToLogin }) =
                 type="text"
                 required={role === UserRole.DRIVER}
                 className="w-full bg-slate-950 px-4 py-4 rounded-2xl border border-slate-800 text-white placeholder-slate-600 outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Brand & Model (e.g. Dacia Logan)"
+                placeholder="Brand & Model"
                 value={vehicleModel}
                 onChange={(e) => setVehicleModel(e.target.value)}
               />
@@ -244,14 +235,14 @@ const Signup: React.FC<SignupProps> = ({ onSignupSuccess, onNavigateToLogin }) =
         <button
           disabled={loading}
           type="submit"
-          className="w-full bg-blue-600 text-white py-5 rounded-2xl font-black text-lg shadow-xl shadow-blue-900/20 active:scale-95 transition-all flex items-center justify-center"
+          className="w-full bg-blue-600 text-white py-5 rounded-2xl font-black text-lg shadow-xl active:scale-95 transition-all flex items-center justify-center mt-6"
         >
           {loading ? <Loader2 className="animate-spin text-white" /> : 'CREATE ACCOUNT'}
         </button>
       </form>
 
-      <div className="mt-auto text-center pb-8 border-t border-slate-900 pt-6">
-        <button onClick={onNavigateToLogin} className="text-slate-500 font-medium">
+      <div className="mt-auto text-center pb-8 border-t border-slate-900 pt-8">
+        <button onClick={onNavigateToLogin} className="text-slate-500 font-bold text-sm">
           Already a member? <span className="text-white font-black">LOG IN</span>
         </button>
       </div>

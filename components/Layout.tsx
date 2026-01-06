@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Menu, ArrowLeft } from 'lucide-react';
 import Sidebar from './Sidebar';
+import Logo from './Logo';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -40,13 +41,19 @@ const Layout: React.FC<LayoutProps> = ({ children, user, title, showBack, onLogo
               <Menu className="w-6 h-6 text-gray-600" />
             </button>
           )}
-          <h1 className="text-xl font-bold tracking-tight text-blue-600">
-            {title || 'Adile Drive'}
-          </h1>
+          {title ? (
+            <h1 className="text-lg font-black tracking-tight text-slate-900 uppercase italic">
+              {title}
+            </h1>
+          ) : (
+             <div className="scale-[0.8] origin-left">
+                <Logo size="sm" showIcon={false} />
+             </div>
+          )}
         </div>
         
         <div className="flex items-center gap-3">
-          <div className="bg-blue-50 w-10 h-10 rounded-xl flex items-center justify-center text-blue-600 font-bold">
+          <div className="bg-blue-600 w-10 h-10 rounded-xl flex items-center justify-center text-white font-black shadow-md shadow-blue-200">
             {user?.name?.[0]}
           </div>
         </div>

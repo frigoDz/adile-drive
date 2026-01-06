@@ -1,6 +1,7 @@
+
 {
   "name": "Adile Drive",
-  "description": "A Moroccan-inspired ride-hailing web application similar to InDrive, featuring negotiated pricing, vehicle type selection, and dual user/driver dashboards.",
+  "description": "A Moroccan-inspired ride-hailing mobile application similar to InDrive, featuring negotiated pricing, vehicle type selection, and dual user/driver dashboards.",
   "requestFramePermissions": [
     "geolocation"
   ]
