@@ -25,9 +25,10 @@ const Logo: React.FC<LogoProps> = ({ size = 'md', className = '', showIcon = fal
   return (
     <div className={`flex items-center gap-4 ${className}`}>
       {/* 
-        App Icon: Very Dark Blue Background, White Border, A (White) and D (Blue)
-        Only shown if explicitly requested (e.g. for splash screens).
-        Otherwise, reserved for the phone's home screen icon.
+        App Icon (Concept for Home Screen Launcher): 
+        Background: Slate-950 (Very Dark Blue)
+        Letter A: White
+        Letter D: Blue (text-blue-500)
       */}
       {showIcon && (
         <div className={`${iconSizes[size]} bg-slate-950 rounded-[24%] flex items-center justify-center font-black shadow-2xl shadow-blue-900/40 border-[3px] border-slate-800 transform hover:scale-105 transition-transform duration-300`}>
@@ -51,3 +52,4 @@ const Logo: React.FC<LogoProps> = ({ size = 'md', className = '', showIcon = fal
 };
 
 export default Logo;
+
